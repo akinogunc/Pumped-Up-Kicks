@@ -7,6 +7,7 @@
 //
 
 #import "AppDelegate.h"
+#import "GADMasterViewController.h"
 
 @interface AppDelegate ()
 
@@ -17,9 +18,41 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    int ads = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"pro"];
+    
+    if(ads == 0){
+        self.interstitial = [self createAndLoadInterstitial];
+    }
+
+    
     return YES;
 }
 
+- (GADInterstitial *)createAndLoadInterstitial {
+    GADInterstitial *interstitial = [[GADInterstitial alloc] initWithAdUnitID:@"ca-app-pub-6688307708468299/6803932952"];
+    interstitial.delegate = self;
+    
+    GADRequest *request = [GADRequest request];
+    [interstitial loadRequest:request];
+    return interstitial;
+}
+
+- (void)interstitialDidDismissScreen:(GADInterstitial *)interstitial {
+    self.interstitial = [self createAndLoadInterstitial];
+}
+
+-(void)showInterstitialFromVC:(UIViewController*)VC{
+    
+    int ads = (int)[[NSUserDefaults standardUserDefaults] integerForKey:@"pro"];
+    
+    if(ads == 0){
+        if ([self.interstitial isReady]) {
+            [self.interstitial presentFromRootViewController:VC];
+        }
+    }
+    
+}
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
